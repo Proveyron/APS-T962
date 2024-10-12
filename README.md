@@ -1,4 +1,4 @@
-# Atividade Supervisionada – Otimização de Sistemas - 962-94349
+# APS – Otimização de Sistemas - 962-94349
 # Lucas Pereira da Silva - 2022200556
 
 Este repositório implementa uma ferramenta de otimização de carteiras utilizando dados financeiros históricos e diversos métodos de análise estatística para calcular retornos e riscos, além de gerar gráficos interativos para visualização.
