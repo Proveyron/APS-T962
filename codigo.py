@@ -29,6 +29,11 @@ def restricao_risco(pesos, matriz_cov, risco_maximo):
 def restricao_pesos(pesos):
     return np.sum(pesos) - 1
 
+# Definir dicionário de cores para os ativos
+def definir_cores_ativos(ativos):
+    cores = plt.get_cmap('tab10')  # Usando o colormap 'tab10', que tem 10 cores distintas
+    return {ativo: cores(i % 10) for i, ativo in enumerate(ativos)}
+
 # Função para plotar a fronteira eficiente
 def plotar_fronteira_eficiente(retornos, matriz_cov):
     num_carteiras = 10000
@@ -51,17 +56,17 @@ def plotar_fronteira_eficiente(retornos, matriz_cov):
     plt.title('Fronteira Eficiente')
     plt.show()
 
-# Gráfico de alocação de ativos
-def plotar_alocacao(pesos, ativos):
+# Gráfico de alocação de ativos com cores
+def plotar_alocacao(pesos, ativos, cores):
     plt.figure(figsize=(7, 7))
-    plt.pie(pesos, labels=ativos, autopct='%1.1f%%', startangle=140)
+    plt.pie(pesos, labels=ativos, autopct='%1.1f%%', startangle=140, colors=[cores[ativo] for ativo in ativos])
     plt.title('Alocação de Ativos Ótima')
     plt.show()
 
 # Função para exibir gráfico de evolução de retorno e risco
-def plotar_evolucao_retorno_risco(dados, pesos):
+def plotar_evolucao_retorno_risco(dados, pesos, cores, ativos):
     retornos_diarios = dados.pct_change()  # Retornos diários
-    retorno_carteira_diario = retornos_diarios.dot(pesos)  # Retornos diários da carteira
+    retorno_carteira_diario = pd.Series(np.dot(retornos_diarios, pesos), index=retornos_diarios.index)
     retorno_acumulado = (1 + retorno_carteira_diario).cumprod()  # Retorno acumulado
     
     # Risco (volatilidade) móvel
@@ -71,14 +76,14 @@ def plotar_evolucao_retorno_risco(dados, pesos):
 
     # Plotando o retorno acumulado da carteira
     plt.subplot(2, 1, 1)
-    plt.plot(retorno_acumulado, label="Retorno Acumulado", color="blue")
+    plt.plot(retorno_acumulado, label="Retorno Acumulado", color=cores[ativos[0]])
     plt.title('Evolução do Retorno Acumulado da Carteira')
     plt.ylabel('Retorno Acumulado')
     plt.legend()
 
     # Plotando a volatilidade (risco) móvel da carteira
     plt.subplot(2, 1, 2)
-    plt.plot(volatilidade_movel, label="Risco (Volatilidade)", color="red")
+    plt.plot(volatilidade_movel, label="Risco (Volatilidade)", color=cores[ativos[1]])
     plt.title('Evolução do Risco da Carteira')
     plt.ylabel('Risco (Volatilidade Anualizada)')
     plt.legend()
@@ -119,10 +124,13 @@ def otimizar_carteira(ativos, data_inicio, data_fim, risco_maximo):
     pesos_otimos = resultado.x
     print("Pesos ótimos:", pesos_otimos)
 
+    # Definir cores para os ativos
+    cores = definir_cores_ativos(ativos)
+
     # Visualizações
     plotar_fronteira_eficiente(array_retornos, matriz_cov)
-    plotar_alocacao(pesos_otimos, ativos)
-    plotar_evolucao_retorno_risco(dados, pesos_otimos)  # Exibir gráfico de evolução de retorno e risco
+    plotar_alocacao(pesos_otimos, ativos, cores)
+    plotar_evolucao_retorno_risco(dados, pesos_otimos, cores, ativos)
 
 # Função para processar a entrada do usuário
 def processar_entrada(ativos, data_inicio, data_fim, risco_maximo):
