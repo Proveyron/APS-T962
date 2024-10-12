@@ -5,6 +5,7 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import ipywidgets as widgets
 from IPython.display import display
+from datetime import datetime
 
 # Funções de apoio
 
@@ -87,6 +88,10 @@ def plotar_evolucao_retorno_risco(dados, pesos):
 
 # Função principal para realizar a otimização e visualização
 def otimizar_carteira(ativos, data_inicio, data_fim, risco_maximo):
+    # Converter as datas do formato dd/mm/aaaa para yyyy-mm-dd
+    data_inicio = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%Y-%m-%d")
+    data_fim = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%Y-%m-%d")
+    
     # Coletar dados históricos de preços
     dados = yf.download(ativos, start=data_inicio, end=data_fim)['Adj Close']
 
@@ -126,8 +131,8 @@ def processar_entrada(ativos, data_inicio, data_fim, risco_maximo):
 
 # Criar widgets para os parâmetros do usuário
 ativos_widget = widgets.Text(value='AAPL,MSFT,GOOGL', description='Ativos:')
-data_inicio_widget = widgets.Text(value='2020-01-01', description='Data de Início:')
-data_fim_widget = widgets.Text(value='2023-01-01', description='Data de Fim:')
+data_inicio_widget = widgets.Text(value='01/01/2020', description='Data de Início (dd/mm/aaaa):')
+data_fim_widget = widgets.Text(value='01/01/2023', description='Data de Fim (dd/mm/aaaa):')
 risco_maximo_widget = widgets.FloatSlider(value=0.2, min=0.05, max=0.5, step=0.01, description='Risco Máximo:')
 
 # Botão para processar a entrada
